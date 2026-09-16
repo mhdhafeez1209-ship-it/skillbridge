@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillBridge — Connecting Student Skills with Local Opportunities</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#1B2430',
+            'ink-soft': '#293449',
+            'ink-blue': '#2E4374',
+            paper: '#FFFBEF',
+            'paper-dim': '#F4EEDC',
+            mustard: '#F2A93B',
+            terracotta: '#E4572E',
+            cork: '#B98756',
+            line: '#D8CDB0'
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Space Grotesk', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-paper text-ink font-sans antialiased selection:bg-mustard selection:text-ink">
+
+  <!-- =========================================================================
+       TOP NAVIGATION BAR
+       ========================================================================= -->
+  <header class="sticky top-0 z-40 bg-ink text-paper shadow-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-mustard text-ink font-serif font-bold text-lg flex items-center justify-center transform -rotate-3 group-hover:rotate-0 transition-transform shadow-sm">
+          SB
+        </div>
+        <span class="font-serif font-bold text-xl tracking-tight text-white">
+          Skill<span class="text-mustard">Bridge</span>
+        </span>
+      </a>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-slate-300">
+        <a href="#how-it-works" class="hover:text-mustard transition-colors">How It Works</a>
+        <a href="#marketplace" class="hover:text-mustard transition-colors">Browse Gigs</a>
+        <a href="#marketplace" onclick="appState.feedViewMode='students'; renderFeed(); updateFeedTabUI();" class="hover:text-mustard transition-colors">Student Talent</a>
+        <a href="#trust-safety" class="hover:text-mustard transition-colors">Trust & Safety</a>
+      </nav>
+
+      <!-- Actions & Status Badges -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Role Status Badge -->
+        <div id="headerRoleBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/15">
+          <!-- Populated dynamically via appState -->
+        </div>
+
+        <!-- Post a Gig Action -->
+        <button id="openPostGigBtn" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mustard text-ink font-semibold text-xs hover:bg-mustard/90 transition-all shadow-sm">
+          <span>+</span> Post a Task
+        </button>
+
+        <!-- Activity Drawer Button -->
+        <button id="openActivityBtn" class="relative p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs flex items-center gap-1.5 transition-colors" title="View Applications & Activity">
+          <span>📋 Activity</span>
+          <span id="activityBadgeCount" class="hidden w-4 h-4 rounded-full bg-terracotta text-white font-bold text-[10px] flex items-center justify-center">0</span>
+        </button>
+
+        <!-- PRD Spec Drawer Button -->
+        <button id="openPrdSpecBtn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="View PRD Compliance Checklist">
+          <span>📄 PRD Spec</span>
+        </button>
+
+        <!-- Device Mode Switcher (Web vs Phone Prototype) -->
+        <button id="toggleDeviceViewBtn" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-300 text-xs font-medium transition-all">
+          📱 Phone View
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       HERO BANNER
+       ========================================================================= -->
+  <section class="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 border-b border-line bg-gradient-to-b from-paper to-paper-dim">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      
+      <!-- Academic / Prototype Pill -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mustard/20 border border-mustard/40 text-ink text-xs font-semibold mb-6">
+        <span>🎓 Project Better Tomorrow — Pathway B (Fresh Discovery)</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
+        <span class="text-terracotta">PRD Validated Prototype</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-ink tracking-tight mb-6 max-w-4xl mx-auto leading-tight">
+        Connecting Student Skills with <span class="underline decoration-mustard decoration-wavy underline-offset-8">Local Opportunities</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto mb-8 font-normal leading-relaxed">
+        A deliberately narrow micro-freelancing platform connecting college students with small, short-term campus tasks. Verified by student ID proof, priced for student budgets, built for beginners.
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-12">
+        <a href="#interactiveAppContainer" onclick="switchAuthRole('freelancer'); navigateToScreen(0);" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-ink text-paper font-semibold text-sm hover:bg-ink-soft shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+          <span>🎓 Start as Student Provider</span>
+          <span>→</span>
+        </a>
+        <a href="#interactiveAppContainer" onclick="switchAuthRole('customer'); navigateToScreen(0);" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-ink-blue text-white font-semibold text-sm hover:opacity-95 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          <span>🙋 Hire Student Talent</span>
+          <span>→</span>
+        </a>
+        <a href="#marketplace" onclick="jumpToStep(2);" class="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-white border border-line text-ink font-semibold text-sm hover:bg-paper shadow-sm transition-all flex items-center justify-center gap-1.5">
+          <span>🔍 Browse Live Feed</span>
+        </a>
+      </div>
+
+      <!-- Key Micro-Opportunity Badges (PRD Section 2) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
+        <div class="bg-white/80 backdrop-blur-sm border border-line rounded-xl p-3 shadow-xs">
+          <div class="text-lg mb-1">🎬</div>
+          <div class="font-serif font-bold text-xs text-ink">Promo Video Editing</div>
+          <div class="text-[11px] text-slate-500">2-min campus reels & trailers</div>
+        </div>
+        <div class="bg-white/80 backdrop-blur-sm border border-line rounded-xl p-3 shadow-xs">
+          <div class="text-lg mb-1">🎨</div>
+          <div class="font-serif font-bold text-xs text-ink">Event Poster Design</div>
+          <div class="text-[11px] text-slate-500">Hostel days & club banners</div>
+        </div>
+        <div class="bg-white/80 backdrop-blur-sm border border-line rounded-xl p-3 shadow-xs">
+          <div class="text-lg mb-1">📊</div>
+          <div class="font-serif font-bold text-xs text-ink">PPT Deck Creation</div>
+          <div class="text-[11px] text-slate-500">Reviews & pitch presentations</div>
+        </div>
+        <div class="bg-white/80 backdrop-blur-sm border border-line rounded-xl p-3 shadow-xs">
+          <div class="text-lg mb-1">💻</div>
+          <div class="font-serif font-bold text-xs text-ink">5-Page Websites</div>
+          <div class="text-[11px] text-slate-500">Student & lab portfolio pages</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       MAIN INTERACTIVE APPLICATION SANDBOX (PRD SECTION 9 SCREENS 1 TO 5)
+       ========================================================================= -->
+  <section id="interactiveAppContainer" class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+    
+    <!-- Header bar above interactive app -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+          <span>Interactive Sandbox</span>
+          <span class="text-slate-300">•</span>
+          <span class="text-terracotta">PRD Spec Compliant</span>
+        </div>
+        <h2 class="font-serif font-bold text-2xl text-ink">Experience the Complete SkillBridge Flow</h2>
+      </div>
+
+      <!-- Navigation & Step Indicators -->
+      <div class="flex items-center gap-3">
+        <button id="appBackBtn" class="hidden text-xs font-semibold text-slate-600 hover:text-ink flex items-center gap-1 px-3 py-1.5 rounded-lg border border-line bg-white shadow-xs">
+          ← Back
+        </button>
+        <div class="flex items-center gap-1.5 bg-white border border-line px-3 py-1.5 rounded-full shadow-xs">
+          <span class="text-[11px] font-medium text-slate-400 mr-1">Steps:</span>
+          <button class="demo-step-dot w-2.5 h-2.5 rounded-full bg-slate-300" onclick="jumpToStep(0)" title="1. Auth & Verification"></button>
+          <button class="demo-step-dot w-2.5 h-2.5 rounded-full bg-slate-300" onclick="jumpToStep(1)" title="2. Skill Selection"></button>
+          <button class="demo-step-dot w-2.5 h-2.5 rounded-full bg-slate-300" onclick="jumpToStep(2)" title="3. Feed / Matching"></button>
+          <button class="demo-step-dot w-2.5 h-2.5 rounded-full bg-slate-300" onclick="jumpToStep(3)" title="4. Apply / Hire"></button>
+          <button class="demo-step-dot w-2.5 h-2.5 rounded-full bg-slate-300" onclick="jumpToStep(4)" title="5. Match Confirmation"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- The App Window Container (can toggle between Full Width and Phone Mode) -->
+    <div id="interactiveAppInner" class="bg-paper-dim border border-line rounded-3xl shadow-xl overflow-hidden transition-all duration-300 relative min-h-[580px]">
+      
+      <!-- Simulated Phone Notch (visible only in phone mode) -->
+      <div id="phoneNotch" class="phone-notch hidden"></div>
+
+      <!-- Content Area -->
+      <div class="p-6 sm:p-8">
+
+        <!-- ===================================================================
+             SCREEN 1: SIGN UP / LOG IN (PRD §7.1)
+             =================================================================== -->
+        <div id="screenAuth" class="app-screen-view max-w-md mx-auto">
+          <div class="text-center mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-ink text-mustard font-serif font-bold text-2xl flex items-center justify-center mx-auto mb-3 shadow-md transform -rotate-2">
+              SB
+            </div>
+            <h2 id="authTitle" class="font-serif font-bold text-2xl text-ink mb-1">Create your account</h2>
+            <p id="authSubtitle" class="text-xs sm:text-sm text-text-muted">Join as a customer, or as a student offering your skill.</p>
+          </div>
+
+          <!-- PRD 7.1: Two Role Tabs with Independent Form State -->
+          <div class="bg-paper border border-line rounded-xl p-1.5 flex gap-1.5 mb-5 shadow-xs">
+            <button id="authTabCustomer" class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-semibold rounded-lg bg-ink-blue text-white shadow-sm transition-all text-center">
+              🙋 Customer
+            </button>
+            <button id="authTabProvider" class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-ink transition-all text-center">
+              🎓 Student Service Provider
+            </button>
+          </div>
+
+          <!-- Provider Safety Notice (PRD §7.1 & 7.2) -->
+          <div id="studentTrustNotice" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
+            <span class="text-base flex-shrink-0">🆔</span>
+            <div>
+              <span class="font-bold block">Safety & Age Gating (18+)</span>
+              Service providers must verify age and identity with an ID proof. This builds trust with customers and keeps SkillBridge safe.
+            </div>
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-3.5 text-left">
+            
+            <!-- Full Name -->
+            <div id="authNameRow">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
+              <input type="text" id="authName" placeholder="e.g. Aisha Khan" class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-white text-ink text-sm focus:outline-none focus:border-ink shadow-xs">
+              <p id="nameError" class="auth-error-msg hidden text-[11px] text-terracotta mt-1"></p>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Personal or College Email</label>
+              <input type="email" id="authEmail" placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-white text-ink text-sm focus:outline-none focus:border-ink shadow-xs">
+              <p id="emailError" class="auth-error-msg hidden text-[11px] text-terracotta mt-1"></p>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+              <input type="password" id="authPassword" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-white text-ink text-sm focus:outline-none focus:border-ink shadow-xs">
+              <p id="passwordError" class="auth-error-msg hidden text-[11px] text-terracotta mt-1"></p>
+            </div>
+
+            <!-- Provider Specific Fields (PRD §7.1) -->
+            <div id="providerSpecificFields" class="hidden space-y-3.5 border-t border-line/80 pt-3.5">
+              
+              <!-- Date of Birth (Age Gate 18+) -->
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-semibold text-slate-600">Date of Birth</label>
+                  <span class="text-[10px] text-slate-500 font-medium">Must be 18+</span>
+                </div>
+                <input type="date" id="authDob" class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-white text-ink text-sm focus:outline-none focus:border-ink shadow-xs">
+                <p id="dobAgeError" class="auth-error-msg hidden text-[11px] text-terracotta mt-1"></p>
+                <p id="dobAgeSuccess" class="auth-success-msg hidden text-[11px] text-emerald-600 font-medium mt-1"></p>
+              </div>
+
+              <!-- ID Proof Upload -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">
+                  ID Proof (College ID, Aadhaar, Passport, Driver's License)
+                </label>
+                
+                <div id="authIdDropZone" onclick="document.getElementById('authIdFile').click()" class="border-2 border-dashed border-line hover:border-ink bg-white/80 rounded-xl p-4 text-center cursor-pointer transition-colors">
+                  
+                  <div id="idUploadPrompt" class="text-xs text-text-muted">
+                    <span class="text-xl block mb-1">📎</span>
+                    <span class="font-semibold text-ink">Click or drag photo of your ID</span>
+                    <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG, PDF up to 10MB</p>
+                  </div>
+
+                  <div id="idFilePreviewContainer" class="hidden flex items-center justify-between gap-2 text-left bg-paper-dim p-2 rounded-lg border border-line">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                      <img id="idPreviewImg" src="" alt="ID Preview" class="w-9 h-9 object-cover rounded border border-line">
+                      <div class="truncate text-xs font-semibold text-ink" id="idFileNameDisplay">document.jpg</div>
+                    </div>
+                    <button type="button" onclick="removeUploadedFile(event)" class="text-xs text-terracotta hover:underline px-2">Remove</button>
+                  </div>
+
+                </div>
+                <input type="file" id="authIdFile" accept="image/*,.pdf" class="hidden">
+                <p id="idFileError" class="auth-error-msg hidden text-[11px] text-terracotta mt-1"></p>
+              </div>
+
+            </div>
+
+            <!-- Submit Button -->
+            <button id="authSubmitBtn" class="w-full py-3 px-4 rounded-xl bg-ink-blue text-white font-semibold text-sm hover:opacity-95 shadow-md transition-all flex items-center justify-center gap-2 mt-4">
+              <span>Create SkillBridge Account</span>
+            </button>
+
+            <!-- Mode Switcher (Log in vs Sign up) -->
+            <div class="text-center pt-2">
+              <button type="button" id="authSwitchLink" class="text-xs text-text-muted hover:text-ink font-semibold underline">
+                Already have an account? Log in
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             SCREEN 2: SKILLS SELECTION (PRD §7.3)
+             =================================================================== -->
+        <div id="screenSkills" class="app-screen-view hidden max-w-2xl mx-auto">
+          <div class="text-center mb-6">
+            <h2 id="skillsScreenTitle" class="font-serif font-bold text-2xl sm:text-3xl text-ink mb-2">What skills can you offer?</h2>
+            <p id="skillsScreenSubtitle" class="text-xs sm:text-sm text-text-muted max-w-lg mx-auto">
+              Pick the skills you want to offer. You can adjust this anytime.
+            </p>
+            <div class="mt-2 inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white border border-line text-ink" id="skillsSelectedCount">
+              0 selected
+            </div>
+          </div>
+
+          <!-- The Fixed 8 Skills Grid (PRD §7.3) -->
+          <div id="skillsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <!-- Populated dynamically via renderSkillsPicker() -->
+          </div>
+
+          <!-- Bottom Action Button -->
+          <div class="max-w-md mx-auto">
+            <button id="skillsNextBtn" class="w-full py-3 px-6 rounded-xl bg-ink text-paper font-semibold text-sm hover:bg-ink-soft shadow-md transition-all flex items-center justify-center gap-2">
+              <span>Show Matching Gigs →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             SCREEN 3: FEED & MARKETPLACE (PRD §7.4)
+             =================================================================== -->
+        <div id="screenFeed" class="app-screen-view hidden">
+          
+          <!-- Feed Header & Controls -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-line">
+            <div>
+              <h2 id="feedHeaderTitle" class="font-serif font-bold text-2xl text-ink mb-1">Micro-Gigs for Students</h2>
+              <p id="feedHeaderSubtitle" class="text-xs sm:text-sm text-text-muted">Matched to the skills you selected.</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <!-- View Switcher (Gigs vs Talent Directory) -->
+              <div class="bg-paper border border-line rounded-lg p-1 flex shadow-xs">
+                <button id="feedTabGigs" class="py-1.5 px-3 text-xs font-semibold rounded-md bg-ink text-paper shadow-xs transition-all">
+                  📌 Gigs Board
+                </button>
+                <button id="feedTabStudents" class="py-1.5 px-3 text-xs font-medium rounded-md text-slate-600 hover:text-ink transition-all">
+                  🎓 Student Talent
+                </button>
+              </div>
+
+              <!-- Search Input -->
+              <div class="relative min-w-[200px]">
+                <input type="text" id="feedSearchInput" placeholder="Search gigs or students..." class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-line bg-white text-xs text-ink focus:outline-none focus:border-ink">
+                <span class="absolute left-2.5 top-1.5 text-xs text-slate-400">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div id="feedCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Populated dynamically via renderFeed() -->
+          </div>
+
+          <!-- Empty State (PRD Section 7.4) -->
+          <div id="feedEmptyState" class="hidden text-center py-16 px-4 bg-white/70 rounded-2xl border border-dashed border-line">
+            <span class="text-4xl block mb-2">🔍</span>
+            <h3 class="font-serif font-bold text-lg text-ink mb-1">No items match your selected filters</h3>
+            <p class="text-xs text-text-muted max-w-sm mx-auto mb-4">
+              Try selecting additional skills from the skill picker or reset your search query.
+            </p>
+            <button id="resetFiltersBtn" class="px-4 py-2 rounded-xl bg-ink text-paper text-xs font-semibold hover:bg-ink-soft transition-all">
+              Reset Filters & Show All
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ===================================================================
+             SCREEN 5: MATCH / CONFIRMATION (PRD §7.6)
+             =================================================================== -->
+        <div id="screenMatch" class="app-screen-view hidden max-w-md mx-auto text-center py-10 relative">
+          
+          <!-- Confetti Canvas Container -->
+          <div id="matchConfettiContainer" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+          <!-- Success Icon -->
+          <div class="w-20 h-20 rounded-full bg-emerald-500 text-white font-bold text-3xl flex items-center justify-center mx-auto mb-4 shadow-lg animate-bounce">
+            🎉
+          </div>
+
+          <h2 id="matchScreenTitle" class="font-serif font-bold text-2xl sm:text-3xl text-ink mb-2">You're in!</h2>
+          <p id="matchScreenSubtitle" class="text-xs sm:text-sm text-text-muted mb-6 leading-relaxed">
+            Your proposal has been successfully dispatched to the client.
+          </p>
+
+          <!-- Item Summary Box -->
+          <div id="matchItemSummary" class="mb-8"></div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button id="matchRestartBtn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-ink text-paper text-xs font-semibold hover:bg-ink-soft transition-all">
+              Browse More Gigs →
+            </button>
+            <button onclick="document.getElementById('openActivityBtn').click();" class="w-full sm:w-auto px-5 py-3 rounded-xl border border-line bg-white text-ink text-xs font-semibold hover:bg-paper transition-all">
+              View in My Activity
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Demo Jumping Bar at Bottom of App Window -->
+      <div class="bg-ink/90 backdrop-blur-sm text-paper px-4 py-2.5 flex items-center justify-between text-[11px] border-t border-slate-700">
+        <span class="font-semibold text-mustard tracking-wide uppercase text-[10px]">Demo Screen Switcher:</span>
+        <div class="flex items-center gap-2">
+          <button onclick="jumpToStep(0)" class="hover:text-mustard underline">1. Auth</button>
+          <span class="text-slate-600">|</span>
+          <button onclick="jumpToStep(1)" class="hover:text-mustard underline">2. Skills</button>
+          <span class="text-slate-600">|</span>
+          <button onclick="jumpToStep(2)" class="hover:text-mustard underline">3. Feed</button>
+          <span class="text-slate-600">|</span>
+          <button onclick="jumpToStep(3)" class="hover:text-mustard underline">4. Apply</button>
+          <span class="text-slate-600">|</span>
+          <button onclick="jumpToStep(4)" class="hover:text-mustard underline">5. Match</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       MARKETPLACE PREVIEW SECTION
+       ========================================================================= -->
+  <section id="marketplace" class="py-16 bg-white border-y border-line">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="font-serif font-bold text-3xl text-ink mb-3">Live Campus Micro-Gigs</h2>
+        <p class="text-sm text-text-muted">
+          Small, well-defined deliverables with fast turnarounds and protected student rates. No 40-hour contract lock-ins.
+        </p>
+      </div>
+
+      <!-- Featured Skills Carousel / Quick Filters -->
+      <div class="flex items-center justify-center flex-wrap gap-2 mb-8">
+        <button onclick="appState.selectedSkills=[]; renderFeed(); jumpToStep(2);" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-ink text-paper shadow-xs">
+          All Skills
+        </button>
+        <button onclick="appState.selectedSkills=['design']; renderFeed(); jumpToStep(2);" class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-paper-dim hover:bg-line border border-line text-ink transition-colors">
+          🎨 Graphic Design
+        </button>
+        <button onclick="appState.selectedSkills=['video']; renderFeed(); jumpToStep(2);" class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-paper-dim hover:bg-line border border-line text-ink transition-colors">
+          🎬 Video Editing
+        </button>
+        <button onclick="appState.selectedSkills=['web']; renderFeed(); jumpToStep(2);" class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-paper-dim hover:bg-line border border-line text-ink transition-colors">
+          💻 Web Design
+        </button>
+        <button onclick="appState.selectedSkills=['ppt']; renderFeed(); jumpToStep(2);" class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-paper-dim hover:bg-line border border-line text-ink transition-colors">
+          📊 PPT Creation
+        </button>
+      </div>
+
+      <!-- Static Highlights Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-paper rounded-2xl border border-line p-6 flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-mustard/20 text-ink">🎨 Poster Design</span>
+              <span class="text-xs font-semibold text-terracotta">₹600 · 2 days</span>
+            </div>
+            <h3 class="font-serif font-bold text-lg text-ink mb-2">College Cultural Fest Poster</h3>
+            <p class="text-xs text-text-muted mb-4">Print-ready A3 design + Instagram square post for inter-college cultural fest.</p>
+          </div>
+          <button onclick="jumpToStep(2);" class="w-full py-2 rounded-xl border border-ink text-xs font-semibold text-ink hover:bg-ink hover:text-paper transition-all">
+            View on Board →
+          </button>
+        </div>
+
+        <div class="bg-paper rounded-2xl border border-line p-6 flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 text-ink-blue">🎬 Reel Editing</span>
+              <span class="text-xs font-semibold text-terracotta">₹950 · 3 days</span>
+            </div>
+            <h3 class="font-serif font-bold text-lg text-ink mb-2">2-Minute Promo Reel</h3>
+            <p class="text-xs text-text-muted mb-4">Hackathon event recap with beat-sync music, captions, and title cards.</p>
+          </div>
+          <button onclick="jumpToStep(2);" class="w-full py-2 rounded-xl border border-ink text-xs font-semibold text-ink hover:bg-ink hover:text-paper transition-all">
+            View on Board →
+          </button>
+        </div>
+
+        <div class="bg-paper rounded-2xl border border-line p-6 flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">💻 Web Development</span>
+              <span class="text-xs font-semibold text-terracotta">₹1,800 · 4 days</span>
+            </div>
+            <h3 class="font-serif font-bold text-lg text-ink mb-2">Faculty 5-Page Portfolio</h3>
+            <p class="text-xs text-text-muted mb-4">Static showcase for research papers, student lab members, and academic bio.</p>
+          </div>
+          <button onclick="jumpToStep(2);" class="w-full py-2 rounded-xl border border-ink text-xs font-semibold text-ink hover:bg-ink hover:text-paper transition-all">
+            View on Board →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       HOW IT WORKS (PRD SECTION 1 & 4 PERSONAS)
+       ========================================================================= -->
+  <section id="how-it-works" class="py-16 md:py-24 bg-paper-dim border-b border-line">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-serif font-bold text-3xl sm:text-4xl text-ink mb-3">Designed for the Realities of Student Freelancing</h2>
+        <p class="text-sm sm:text-base text-text-muted">
+          Large freelancing platforms feel intimidating, require extensive 50-job reviews, and ignore small campus tasks. SkillBridge strips away the noise.
+        </p>
+      </div>
+
+      <!-- Dual Flow Pillars (PRD Personas) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        
+        <!-- Aisha Persona (Student Provider) -->
+        <div class="bg-white rounded-3xl border border-line p-8 shadow-sm">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold mb-4">
+            <span>🎓 Persona 1: Aisha (Student Freelancer)</span>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-ink mb-3">"I have skills, but no 5-year portfolio."</h3>
+          <p class="text-xs sm:text-sm text-text-muted mb-6 leading-relaxed">
+            Second-year student good at design and video editing. Intimidated by Fiverr algorithms and client bidding wars. SkillBridge gives her small, approachable campus tasks to build her very first paid track record.
+          </p>
+          <ul class="space-y-3 text-xs text-slate-700">
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">1</span>
+              <span>Sign up with DOB + Student ID proof (18+ verified)</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">2</span>
+              <span>Pick offered skills (Design, Editing, Code, PPT)</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">3</span>
+              <span>Apply directly with rate bid and turnaround time</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Rohan Persona (Customer) -->
+        <div class="bg-white rounded-3xl border border-line p-8 shadow-sm">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-ink-blue text-xs font-semibold mb-4">
+            <span>🙋 Persona 2: Rohan (Campus Club Lead)</span>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-ink mb-3">"I need a poster by Friday on a ₹500 budget."</h3>
+          <p class="text-xs sm:text-sm text-text-muted mb-6 leading-relaxed">
+            Organizes college events and urgently needs quick deliverables without agency overhead. He needs someone affordable who won't disappear and whose identity is verified.
+          </p>
+          <ul class="space-y-3 text-xs text-slate-700">
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-blue-100 text-ink-blue flex items-center justify-center font-bold">1</span>
+              <span>Select the skill required for the upcoming event</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-blue-100 text-ink-blue flex items-center justify-center font-bold">2</span>
+              <span>Browse verified student creators in the talent directory</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-blue-100 text-ink-blue flex items-center justify-center font-bold">3</span>
+              <span>Send task details, budget & deadline directly</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Comparison Matrix (PRD Section 1 & 2) -->
+      <div class="bg-white rounded-3xl border border-line overflow-hidden shadow-sm">
+        <div class="p-6 bg-ink text-paper">
+          <h3 class="font-serif font-bold text-lg text-white">Why SkillBridge is Different</h3>
+          <p class="text-xs text-slate-400">Comparing traditional freelancing marketplaces with campus micro-freelancing.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-paper-dim/80 text-ink font-semibold border-b border-line">
+              <tr>
+                <th class="py-3 px-4">Feature</th>
+                <th class="py-3 px-4 text-slate-500">Upwork / Fiverr</th>
+                <th class="py-3 px-4 text-ink font-bold bg-mustard/15">SkillBridge</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-line/60">
+              <tr>
+                <td class="py-3 px-4 font-semibold">Scope of Work</td>
+                <td class="py-3 px-4 text-slate-500">Complex, multi-month contracts</td>
+                <td class="py-3 px-4 font-semibold text-emerald-700 bg-mustard/10">Bite-sized micro-tasks (₹300 - ₹2,000)</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-semibold">Cold Start for Beginners</td>
+                <td class="py-3 px-4 text-slate-500">Extremely harsh algorithm penalty</td>
+                <td class="py-3 px-4 font-semibold text-emerald-700 bg-mustard/10">Zero penalty; equal local discovery</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-semibold">Identity Verification</td>
+                <td class="py-3 px-4 text-slate-500">Heavy paid biometric checks</td>
+                <td class="py-3 px-4 font-semibold text-emerald-700 bg-mustard/10">Student ID & 18+ verification badge</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-semibold">Commission Fees</td>
+                <td class="py-3 px-4 text-slate-500">10% - 20% cut from students</td>
+                <td class="py-3 px-4 font-semibold text-emerald-700 bg-mustard/10">100% earnings go directly to student</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       TRUST, SAFETY & PRD SECTION 8 LIMITATIONS
+       ========================================================================= -->
+  <section id="trust-safety" class="py-16 bg-white border-b border-line">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2">
+          🛡️ Built with Integrity
+        </span>
+        <h2 class="font-serif font-bold text-3xl text-ink mb-2">Campus Trust & Safety Architecture</h2>
+        <p class="text-xs sm:text-sm text-text-muted">
+          Keeping campus freelance interactions safe, accountable, and transparent.
+        </p>
+      </div>
+
+      <!-- PRD Section 8 Explicit Disclaimer Callout -->
+      <div class="bg-paper-dim border-2 border-dashed border-cork rounded-2xl p-6 sm:p-8 relative">
+        <div class="flex items-center gap-2 mb-3 text-ink font-serif font-bold text-lg">
+          <span>⚠️</span>
+          <span>PRD Section 8: Prototype Limitations & Production Roadmap</span>
+        </div>
+        
+        <p class="text-xs text-text-muted mb-4 leading-relaxed">
+          As defined in Section 8 of the Product Requirements Document, the current prototype verifies that a valid document file was provided and confirms the entered Date of Birth meets the 18+ requirement.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-700">
+          <div class="bg-white p-4 rounded-xl border border-line">
+            <span class="font-bold text-ink block mb-1">In Prototype Scope:</span>
+            <ul class="space-y-1 text-[11px] list-disc list-inside text-text-muted">
+              <li>18+ Date of birth gating check</li>
+              <li>Compulsory ID file attachment for providers</li>
+              <li>Simulated anti-tampering scan & badge issuance</li>
+              <li>In-browser memory session management</li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-line">
+            <span class="font-bold text-ink block mb-1">Required for Live Production:</span>
+            <ul class="space-y-1 text-[11px] list-disc list-inside text-text-muted">
+              <li>DigiLocker / Aadhaar eKYC integration (India)</li>
+              <li>Automated OCR to extract DoB and photo</li>
+              <li>Liveness / Selfie facial match heuristics</li>
+              <li>Encrypted government database cross-checks</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="bg-ink text-paper py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-mustard text-ink font-serif font-bold text-base flex items-center justify-center">
+          SB
+        </div>
+        <div>
+          <span class="font-serif font-bold text-lg text-white">Skill<span class="text-mustard">Bridge</span></span>
+          <p class="text-[11px] text-slate-400">Micro-Freelancing Platform Connecting Student Skills with Local Opportunities</p>
+        </div>
+      </div>
+
+      <div class="text-xs text-slate-400 text-center sm:text-right">
+        <div>Prepared for <span class="text-white font-semibold">Project Better Tomorrow — Pathway B</span></div>
+        <div class="text-[11px] text-slate-500 mt-1">Based on SkillBridge Product Requirements Document (PRD v1.0)</div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODAL 1: SIMULATED ID VERIFICATION PIPELINE (PRD §7.2)
+       ========================================================================= -->
+  <div id="verificationModal" class="fixed inset-0 z-50 bg-ink/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 text-white shadow-2xl relative overflow-hidden">
+      
+      <!-- Laser Scan Beam -->
+      <div id="scannerBeam" class="scanner-laser-line"></div>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xl flex items-center justify-center mx-auto mb-3 animate-pulse">
+          🛡️
+        </div>
+        <h3 class="font-serif font-bold text-xl text-white">Verifying Student Credentials</h3>
+        <p id="verifyCurrentStatus" class="text-xs text-slate-400 mt-1">Initializing cryptographic verification container...</p>
+      </div>
+
+      <!-- Animated Progress Bar -->
+      <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-6">
+        <div id="verifyProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+      </div>
+
+      <!-- Sequential Checklist (PRD §7.2) -->
+      <div id="verifyStepsList" class="space-y-1 mb-6">
+        <!-- Injected dynamically via VerificationSimulator -->
+      </div>
+
+      <!-- Production Note Pill -->
+      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-400 flex items-start gap-2">
+        <span>ℹ️</span>
+        <span>Simulated UI demonstration as defined in Section 8 of SkillBridge PRD.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: APPLY FOR GIG (PRD §7.5)
+       ========================================================================= -->
+  <div id="applyGigModal" class="fixed inset-0 z-50 bg-ink/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-ink shadow-2xl border border-line">
+      
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-line">
+        <h3 class="font-serif font-bold text-lg text-ink">Apply for this Gig</h3>
+        <button id="closeApplyModalBtn" class="text-slate-400 hover:text-ink text-sm">✕</button>
+      </div>
+
+      <!-- Read-only gig info (PRD §7.5) -->
+      <div class="bg-paper-dim rounded-xl p-3 mb-4 border border-line">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Target Opportunity</span>
+        <h4 id="applyGigTitleReadonly" class="font-serif font-bold text-sm text-ink mb-0.5">Gig Title</h4>
+        <p id="applyGigMetaReadonly" class="text-[11px] text-text-muted">₹600 · Turnaround: 2 days</p>
+      </div>
+
+      <!-- Application fields -->
+      <div class="space-y-3.5 mb-6 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Your Pitch / Experience</label>
+          <textarea id="applyPitchInput" rows="3" placeholder="I've designed posters for two hostel fests — happy to send drafts within 24 hours." class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs resize-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Your Proposed Rate</label>
+          <input type="text" id="applyRateInput" placeholder="₹600" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+        </div>
+      </div>
+
+      <button id="applySubmitBtn" class="w-full py-3 px-4 rounded-xl bg-ink text-paper font-semibold text-xs hover:bg-ink-soft transition-all shadow-md">
+        Send Application to Client →
+      </button>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: CONTACT & HIRE STUDENT (PRD §7.5)
+       ========================================================================= -->
+  <div id="hireStudentModal" class="fixed inset-0 z-50 bg-ink/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-ink shadow-2xl border border-line">
+      
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-line">
+        <h3 class="font-serif font-bold text-lg text-ink">Contact Student Talent</h3>
+        <button id="closeHireModalBtn" class="text-slate-400 hover:text-ink text-sm">✕</button>
+      </div>
+
+      <!-- Read-only student info (PRD §7.5) -->
+      <div class="bg-paper-dim rounded-xl p-3 mb-4 border border-line">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Student Creator</span>
+        <h4 id="hireStudentNameReadonly" class="font-serif font-bold text-sm text-ink mb-0.5">Aisha Khan</h4>
+        <p id="hireStudentMetaReadonly" class="text-[11px] text-text-muted">NID 2nd Year · ₹400 - ₹800</p>
+      </div>
+
+      <!-- Task details fields -->
+      <div class="space-y-3 mb-6 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Task Title</label>
+          <input type="text" id="hireTaskTitleInput" placeholder="e.g. Need poster for robotics workshop" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Task Brief / Requirements</label>
+          <textarea id="hireTaskDetailsInput" rows="3" placeholder="Need an energetic visual with our club sponsor logos included..." class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs resize-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Offered Budget</label>
+            <input type="text" id="hireBudgetInput" placeholder="₹500" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Deadline</label>
+            <input type="text" id="hireDeadlineInput" placeholder="2 days" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+          </div>
+        </div>
+      </div>
+
+      <button id="hireSubmitBtn" class="w-full py-3 px-4 rounded-xl bg-ink-blue text-white font-semibold text-xs hover:opacity-95 transition-all shadow-md">
+        Send Task Request →
+      </button>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: POST A NEW CAMPUS GIG (Customer Feature)
+       ========================================================================= -->
+  <div id="postGigModal" class="fixed inset-0 z-50 bg-ink/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-ink shadow-2xl border border-line">
+      
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-line">
+        <h3 class="font-serif font-bold text-lg text-ink">Post a Micro-Gig</h3>
+        <button id="closePostGigModalBtn" class="text-slate-400 hover:text-ink text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3.5 mb-6 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Gig Title</label>
+          <input type="text" id="postGigTitleInput" placeholder="e.g. 10 slides deck for economics seminar" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Primary Skill Required</label>
+          <select id="postGigSkillSelect" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+            <!-- Populated dynamically via SKILLS -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Budget (₹)</label>
+            <input type="text" id="postGigBudgetInput" placeholder="500" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Timeframe</label>
+            <input type="text" id="postGigDeadlineInput" placeholder="2 days" class="w-full px-3.5 py-2 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Brief Description</label>
+          <textarea id="postGigDescInput" rows="3" placeholder="Provide notes, brand guidelines or files required..." class="w-full px-3.5 py-2.5 rounded-xl border border-line bg-paper text-ink text-xs focus:outline-none focus:border-ink shadow-xs resize-none"></textarea>
+        </div>
+      </div>
+
+      <button id="postGigSubmitBtn" class="w-full py-3 px-4 rounded-xl bg-ink text-paper font-semibold text-xs hover:bg-ink-soft transition-all shadow-md">
+        Publish Gig to Board →
+      </button>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       DRAWER: USER ACTIVITY CENTER
+       ========================================================================= -->
+  <div id="activityDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white border-l border-line shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-5 bg-ink text-paper flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">📋</span>
+        <h3 class="font-serif font-bold text-base text-white">Your Activity Center</h3>
+      </div>
+      <button id="closeActivityBtn" class="text-slate-400 hover:text-white text-sm px-2 py-1">✕</button>
+    </div>
+
+    <div id="activityItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <!-- Populated dynamically via renderActivityContent() -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       DRAWER: PRD COMPLIANCE SPECIFICATION
+       ========================================================================= -->
+  <div id="prdSpecDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-slate-900 text-slate-200 border-l border-slate-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-5 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">📄</span>
+        <div>
+          <h3 class="font-serif font-bold text-base text-white">PRD Requirements Matrix</h3>
+          <p class="text-[10px] text-slate-400">SkillBridge — Pathway B (Fresh Discovery)</p>
+        </div>
+      </div>
+      <button id="closePrdSpecBtn" class="text-slate-400 hover:text-white text-sm px-2 py-1">✕</button>
+    </div>
+
+    <div id="prdChecklistContainer" class="flex-1 overflow-y-auto p-5 space-y-3">
+      <!-- Populated dynamically via renderPrdSpecContent() -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       TOAST NOTIFICATION CONTAINER
+       ========================================================================= -->
+  <div id="toastNotificationContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/verification.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
